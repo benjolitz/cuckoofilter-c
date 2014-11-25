@@ -56,6 +56,32 @@ uint16_t __PermEncodeImpl(
     #endif
     return table->enc_table[packed];
 }
-// void __PermGenTablesImpl(int, int, uint8_t[4], uint16_t);
+// void __PermGenTablesImpl(PermEncoding_t*, int, int, uint8_t[4], uint16_t*);
+void __PermGenTablesImpl(
+        PermEncoding_t* table, int start, int k, uint8_t destination[4],
+        uint16_t* index) {
+    for (int i = start; i < 16; i++) {
+        destination[k] = i;
+        // For every k < 4, call genTables on each successive index (k) for
+        // destination
+        if ( (k + 1) < 4) {
+            table->genTables(i, k+1, destination, index);
+            continue;
+        }
+        // set the dec_table element (via *index) to the uint16
+        // formed by the packed destination.
+        uint16_t packed_dest = table->__pack__(destination);
+        table->dec_table[*index] = packed_dest;
+        table->enc_table[packed_dest] = *index;
+        #ifdef NOISY
+            printf(
+                "enc_table[%04x] = %04x\t %x %x %x %x\n",
+                packed_dest, *index,
+                destination[0], destination[1], destination[2],
+                destination[3]);
+        #endif
+        *index = *index + 1;
+    }
+}
 // PermEncoding_t* initializePermEncoding(void);
 

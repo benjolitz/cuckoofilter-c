@@ -5,16 +5,16 @@ typedef void (*Perm_unpack_m)(uint16_t, uint8_t[4]);
 typedef uint16_t (*Perm_pack_p)(const uint8_t[4]);
 typedef void (*Perm_decode_m)(const uint16_t, uint8_t[4]);
 typedef uint16_t (*Perm_encode_p)(const uint8_t[4]);
-typedef void (*Perm_gen_tables_m)(int, int, uint8_t[4], uint16_t);
+typedef void (*Perm_gen_tables_m)(int, int, uint8_t[4], uint16_t*);
 
 typedef struct PermEncoding_t {
-    Perm_unpack_m __unpack__;
-    Perm_pack_p __pack__;
+    const Perm_unpack_m __unpack__;
+    const Perm_pack_p __pack__;
     uint16_t dec_table[PERM_NENTS];
     uint16_t enc_table[1 << 16];
-    Perm_decode_m decode;
-    Perm_encode_p encode;
-    Perm_gen_tables_m genTables;
+    const Perm_decode_m decode;
+    const Perm_encode_p encode;
+    const Perm_gen_tables_m genTables;
 } PermEncoding_t;
 
 void __PermUnpackImpl(uint16_t, uint8_t[4]);
@@ -23,5 +23,5 @@ uint16_t __PermPackImpl(const uint8_t[4]);
 void __PermDecodeImpl(PermEncoding_t*, const uint16_t, uint8_t[4]);
 
 uint16_t __PermEncodeImpl(PermEncoding_t*, const uint8_t[4]);
-void __PermGenTablesImpl(int, int, uint8_t[4], uint16_t);
+void __PermGenTablesImpl(PermEncoding_t*, int, int, uint8_t[4], uint16_t*);
 PermEncoding_t* initializePermEncoding(void);
