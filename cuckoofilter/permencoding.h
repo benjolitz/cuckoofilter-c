@@ -14,5 +14,14 @@ typedef struct PermEncoding_t {
     uint16_t enc_table[1 << 16];
     const Perm_decode_m* decode;
     const Perm_encode_p* encode;
-    const Perm_gen_tables_m gen_tables;
+    const Perm_gen_tables_m genTables;
 } PermEncoding_t;
+
+void __PermUnpackImpl(uint16_t, uint8_t[4]);
+uint16_t __PermPackImpl(const uint8_t[4]);
+
+void __PermDecodeImpl(PermEncoding_t*, const uint16_t, uint8_t[4]);
+
+uint16_t __PermEncodeImpl(PermEncoding_t*, const uint8_t[4]);
+void __PermGenTablesImpl(int, int, uint8_t[4], uint16_t);
+PermEncoding_t* initializePermEncoding(void);

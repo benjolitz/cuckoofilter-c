@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
-#include "packed_table.h"
-#include "single_table.h"
+#include <cuckoofilter/packed_table.h>
+#include <cuckoofilter/single_table.h>
 
 typedef enum CuckooTableTypes_t {
     CuckooTableSingle = 0,

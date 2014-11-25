@@ -1,4 +1,4 @@
-#include "permencoding.h"
+#include <cuckoofilter/permencoding.h>
 
 typedef struct packed_table_t {
     const size_t dirbits_per_tag;
