@@ -1,5 +1,5 @@
-#include <cuckoofilter/permencoding.h>
-
+#include <cuckoofilter/cuckoofilter.h>
+#include <stdint.h>
 /*
 ** The reference implementation looks like this:
 ** out[0] = (in & 0x000f);
@@ -44,7 +44,7 @@ void __PermDecodeImpl(
 // uint16_t __PermEncodeImpl(PermEncoding_t*, const uint8_t[4]);
 uint16_t __PermEncodeImpl(
         PermEncoding_t* table, const uint8_t lowbits[4]) {
-    uint16_t packed = (table->__pack__)(lowbits);
+    uint16_t packed = table->__pack__(lowbits);
     #ifdef NOISY
         printf("PermEncode method.\n");
         for (unsigned int index = 0; index < 4; index++) {
@@ -54,7 +54,7 @@ uint16_t __PermEncodeImpl(
             "pack(lowbits) => %x\nenc_table[%x] = %x\n",
             packed, packed, table->enc_table[packed]);
     #endif
-    return (table->enc_table)[packed];
+    return table->enc_table[packed];
 }
 // void __PermGenTablesImpl(int, int, uint8_t[4], uint16_t);
 // PermEncoding_t* initializePermEncoding(void);

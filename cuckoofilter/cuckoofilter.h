@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
-#include <cuckoofilter/cuckoo_tables.h>
+#include <cuckoofilter/tables.h>
 #define MAX_CUCKOO_KICK_COUNT_FAIL 500
 
 // function typedef styles:
