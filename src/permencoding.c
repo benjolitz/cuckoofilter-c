@@ -31,7 +31,7 @@ uint16_t __PermPackImpl(const uint8_t source[4]) {
 
 // void __PermDecodeImpl(PermEncoding_t*, const uint16_t, uint8_t[4]);
 void __PermDecodeImpl(
-        PermEncoding_t* table, const uint16_t index,
+        const PermEncoding_t* table, const uint16_t index,
         uint8_t lowbits[4]) {
     uint16_t source = table->dec_table[index];
     table->__unpack__(source, lowbits);
@@ -47,7 +47,7 @@ void __PermDecodeImpl(
 
 // uint16_t __PermEncodeImpl(PermEncoding_t*, const uint8_t[4]);
 uint16_t __PermEncodeImpl(
-        PermEncoding_t* table, const uint8_t lowbits[4]) {
+        const PermEncoding_t* table, const uint8_t lowbits[4]) {
     uint16_t packed = table->__pack__(lowbits);
     #ifdef NOISY
         printf("PermEncode method.\n");
