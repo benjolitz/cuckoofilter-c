@@ -18,8 +18,10 @@
     typedef bool (*ST_Delete_tag_from_bucket_m)(
         const single_table_t*, const size_t, const uint32_t);
     typedef bool (*ST_Insert_tag_to_bucket_m)(
-        const single_table_t*, const size_t, const uint32_t, const bool, uint32_t*);
-    typedef size_t (*ST_Num_tags_in_bucket_p)(const single_table_t*, const size_t);
+        const single_table_t*, const size_t, const uint32_t,
+        const bool, uint32_t*);
+    typedef size_t (*ST_Num_tags_in_bucket_p)(
+        const single_table_t*, const size_t);
     // Impl defs
 
     void __ST_cleanUpTagsImpl(single_table_t* table)
@@ -44,19 +46,22 @@
         __attribute__((nonnull));
 
     bool __ST_findTagInBucketImpl(
-            const single_table_t* table, const size_t, const uint32_t)
+            const single_table_t* table, const size_t index_hash,
+            const uint32_t tag_hash)
         __attribute__((nonnull));
     bool __ST_deleteTagFromBucketImpl(
-            const single_table_t* table, const size_t, const uint32_t)
+            const single_table_t* table, const size_t index_hash,
+            const uint32_t tag_hash)
         __attribute__((nonnull));
     bool __ST_insertTagToBucketImpl(
-            const single_table_t* table, const size_t, const uint32_t,
-            const bool, uint32_t*)
+            const single_table_t* table, const size_t index_hash,
+            const uint32_t tag_hash, const bool evict_tag_if_no_space,
+            uint32_t* old_tag_hash)
         __attribute__((nonnull));
     size_t __ST_getNumTagsInBucketImpl(
-            const single_table_t* table, const size_t)
+            const single_table_t* table, const size_t index_hash)
         __attribute__((nonnull));
-
+    
 
     struct single_table_t {
         const size_t                       bits_per_tag;

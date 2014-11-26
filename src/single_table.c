@@ -151,22 +151,22 @@ bool __ST_findTagInBucketsImpl(
     if (4 == table->tags_per_bucket) {
         switch(table->bits_per_tag) {
             case 4:
-                result = hasvalue4(bitfield1, tag) || hasvalue4(bitfield2, tag);
+                result = hasvalue4(bitfield1, tag_hash) || hasvalue4(bitfield2, tag_hash);
                 break;
             case 8:
-                result = hasvalue8(bitfield1, tag) || hasvalue8(bitfield2, tag);
+                result = hasvalue8(bitfield1, tag_hash) || hasvalue8(bitfield2, tag_hash);
                 break;
             case 12:
-                result = hasvalue12(bitfield1, tag) || hasvalue12(bitfield2, tag);
+                result = hasvalue12(bitfield1, tag_hash) || hasvalue12(bitfield2, tag_hash);
                 break;
             case 16:
-                result = hasvalue16(bitfield1, tag) || hasvalue16(bitfield2, tag);
+                result = hasvalue16(bitfield1, tag_hash) || hasvalue16(bitfield2, tag_hash);
                 break;
         }
     } else {
         for (size_t index = 0; index < (table->tags_per_bucket); index++) {
-            if ((table->readTag(table, index_hash, index)) == tag ||
-                (table->readTag(table, alt_index_hash, index)) == tag) {
+            if ((table->readTag(table, index_hash, index)) == tag_hash ||
+                (table->readTag(table, alt_index_hash, index)) == tag_hash) {
                 result = true;
                 break;
             }
@@ -186,21 +186,21 @@ bool __ST_findTagInBucketImpl(
     if (4 == table->tags_per_bucket) {
         switch(table->bits_per_tag) {
             case 4:
-                result = hasvalue4(bitfield1, tag);
+                result = hasvalue4(bitfield1, tag_hash);
                 break;
             case 8:
-                result = hasvalue8(bitfield1, tag);
+                result = hasvalue8(bitfield1, tag_hash);
                 break;
             case 12:
-                result = hasvalue12(bitfield1, tag);
+                result = hasvalue12(bitfield1, tag_hash);
                 break;
             case 16:
-                result = hasvalue16(bitfield1, tag);
+                result = hasvalue16(bitfield1, tag_hash);
                 break;
         }
     } else {
         for (size_t index = 0; index < (table->tags_per_bucket); index++) {
-            if (table->readTag(table, index_hash, index) == tag) {
+            if (table->readTag(table, index_hash, index) == tag_hash) {
                 result = true;
                 break;
             }
@@ -210,18 +210,50 @@ bool __ST_findTagInBucketImpl(
 }
 
 bool __ST_deleteTagFromBucketImpl(
-        const single_table_t* table, const size_t, const uint32_t) {
-
+        const single_table_t* table, const size_t index_hash,
+        const uint32_t tag_hash) {
+    bool result = false;
+    for (size_t index = 0; index < (table->tags_per_bucket); index++) {
+        if (tag_hash == table->readTag(table, index_hash, index)) {
+            assert(true == table->findTagInBucket(index_hash, tag_hash));
+            table->writeTag(table, index_hash, index, 0);
+            result = true;
+            break;
+        }
+    }
+    return result;
 }
 
 bool __ST_insertTagToBucketImpl(
-        const single_table_t* table, const size_t, const uint32_t, const bool, uint32_t*) {
+        const single_table_t* table, const size_t index_hash,
+        const uint32_t tag_hash, const bool evict_tag_if_no_space,
+        uint32_t* old_tag_hash) {
 
+    for (size_t index = 0; index < (table->tags_per_bucket); index++) {
+        if (0 == table->readTag(table, index_hash, index)) {
+            table->writeTag(table, index_hash, index, tag_hash);
+            return true;
+        }
+    }
+
+    if (evict_tag_if_no_space) {
+        size_t random_index = rand() % table->tags_per_bucket;
+        *old_tag_hash = table->readTag(table, index_hash, random_index);
+        table->writeTag(table, index_hash, random_index, tag_hash);
+    }
+
+    return false;
 }
 
 size_t __ST_getNumTagsInBucketImpl(
-        const single_table_t* table, const size_t) {
-
+        const single_table_t* table, const size_t index_hash) {
+    size_t count = 0;
+    for (size_t index=0; index < (table->tags_per_bucket); index++) {
+        if (0 != table->readTag(table, index_hash, index)) {
+            count++;
+        }
+    }
+    return count;
 }
 
 
