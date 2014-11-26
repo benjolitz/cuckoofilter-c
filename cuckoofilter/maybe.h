@@ -12,6 +12,7 @@ typedef enum ERROR_TYPE {
     GENERAL_MALLOC_FAILURE,
     SINGLE_TABLE_MALLOC_FAILURE,
     SINGLE_TABLE_BUCKETS_MALLOC_FAILURE,
+    PERM_ENCODING_MALLOC_FAILURE,
     //bad funargs
     ILLEGAL_BITS_PER_TAG_DEFINITION,
     ILLEGAL_NUM_BUCKET_DEFINITION,
@@ -20,7 +21,8 @@ typedef enum ERROR_TYPE {
 // main MAYBE types:
 typedef enum MAYBE_TYPE {
     VOID_PTR,
-    SINGLE_TABLE_PTR
+    SINGLE_TABLE_PTR,
+    PERM_ENCODING_PTR,
 } MAYBE_TYPE;
 
 typedef struct MAYBE_PTR {
@@ -30,5 +32,6 @@ typedef struct MAYBE_PTR {
         ERROR_TYPE error;
         void* void_ptr;
         single_table_t* single_table_ptr;
+        PermEncoding_t* perm_encoding_ptr;
     }
 } MAYBE;

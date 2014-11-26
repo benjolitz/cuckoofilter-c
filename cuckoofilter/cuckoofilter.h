@@ -28,7 +28,7 @@ typedef struct VictimCache {
 
 //Leave incomplete until function pointer typedefs are done.
 typedef struct CuckooFilter_t CuckooFilter_t;
-
+typedef struct PermEncoding_t PermEncoding_t;
 //primary data structures
 
 /*

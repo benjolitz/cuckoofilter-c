@@ -1,6 +1,9 @@
 #include <cuckoofilter/cuckoofilter.h>
-#include <stdint.h>
-#include <string.h>
+#include <cuckoofilter/universal.h>
+
+#ifndef UTILS_h
+#include <cuckoofilter/utils.h>
+#endif
 /*
 ** The reference implementation looks like this:
 ** out[0] = (in & 0x000f);
@@ -85,8 +88,17 @@ void __PermGenTablesImpl(
     }
 }
 // PermEncoding_t* initializePermEncoding(void);
-PermEncoding_t* initializePermEncoding(void) {
+MAYBE_PTR initializePermEncoding(void) {
+    MAYBE_PTR maybe;
+    maybe.has_error = false;
+    maybe.type = PERM_ENCODING_PTR;
+
     PermEncoding_t* result = malloc(sizeof(PermEncoding_t));
+    if (NULL == result) {
+        maybe.has_error = true;
+        maybe.result.error = PERM_ENCODING_MALLOC_FAILURE;
+        goto end;
+    }
     // Override the const paramters by assigning these functions
     // directly to the addresses pointed to.
     // I want them const to avoid accidents.
@@ -100,5 +112,7 @@ PermEncoding_t* initializePermEncoding(void) {
     memset(result->dec_table, 0, sizeof(result->dec_table));
     memset(result->enc_table, 0, sizeof(result->enc_table));
     result->genTables(result, 0, 0, destination, &index);
-    return result;
+
+    maybe.result.perm_encoding_ptr = result;
+    return maybe;
 }

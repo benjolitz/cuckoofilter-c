@@ -1,5 +1,4 @@
 #define PERM_NENTS 3876
-typedef struct PermEncoding_t PermEncoding_t;
 
 typedef void (*Perm_unpack_m)(uint16_t, uint8_t[4]);
 typedef uint16_t (*Perm_pack_p)(const uint8_t[4]);
@@ -26,4 +25,4 @@ uint16_t __PermEncodeImpl(PermEncoding_t*, const uint8_t[4]);
 void __PermGenTablesImpl(PermEncoding_t*, int, int, uint8_t[4], uint16_t*);
 
 // Our constructor:
-PermEncoding_t* initializePermEncoding(void);
+MAYBE_PTR initializePermEncoding(void);
