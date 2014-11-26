@@ -1,5 +1,6 @@
 #include <cuckoofilter/cuckoofilter.h>
 #include <stdint.h>
+#include <string.h>
 /*
 ** The reference implementation looks like this:
 ** out[0] = (in & 0x000f);
@@ -84,4 +85,17 @@ void __PermGenTablesImpl(
     }
 }
 // PermEncoding_t* initializePermEncoding(void);
-
+PermEncoding_t* initializePermEncoding(void) {
+    PermEncoding_t* result = malloc(sizeof(PermEncoding_t));
+    *(Perm_unpack_m*)&result->__unpack__ = __PermUnpackImpl;
+    *(Perm_pack_p*)&result->__pack__ = __PermPackImpl;
+    *(Perm_decode_m*)&result->decode = __PermDecodeImpl;
+    *(Perm_encode_p*)&result->encode = __PermEncodeImpl;
+    *(Perm_gen_tables_m*)&result->genTables = __PermGenTablesImpl;
+    uint8_t destination[4];
+    uint16_t index = 0
+    memset(result->dec_table, 0, sizeof(result->dec_table));
+    memset(result->enc_table, 0, sizeof(result->enc_table));
+    result->genTables(result, 0, 0, destination, &index);
+    return result;
+}
