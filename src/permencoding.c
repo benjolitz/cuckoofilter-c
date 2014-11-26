@@ -114,5 +114,6 @@ MAYBE_PTR initializePermEncoding(void) {
     result->genTables(result, 0, 0, destination, &index);
 
     maybe.result.perm_encoding_ptr = result;
+    end:
     return maybe;
 }
