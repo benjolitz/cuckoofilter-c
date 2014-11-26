@@ -87,6 +87,9 @@ void __PermGenTablesImpl(
 // PermEncoding_t* initializePermEncoding(void);
 PermEncoding_t* initializePermEncoding(void) {
     PermEncoding_t* result = malloc(sizeof(PermEncoding_t));
+    // Override the const paramters by assigning these functions
+    // directly to the addresses pointed to.
+    // I want them const to avoid accidents.
     *(Perm_unpack_m*)&result->__unpack__ = __PermUnpackImpl;
     *(Perm_pack_p*)&result->__pack__ = __PermPackImpl;
     *(Perm_decode_m*)&result->decode = __PermDecodeImpl;
