@@ -148,7 +148,7 @@ bool __ST_findTagInBucketsImpl(
     uint64_t bitfield2 = *((uint64_t *) alt_index_bucket);
     bool result = false;
 
-    if (table->tags_per_bucket == 4) {
+    if (4 == table->tags_per_bucket) {
         switch(table->bits_per_tag) {
             case 4:
                 result = hasvalue4(bitfield1, tag) || hasvalue4(bitfield2, tag);
@@ -166,7 +166,7 @@ bool __ST_findTagInBucketsImpl(
     } else {
         for (size_t index = 0; index < (table->tags_per_bucket); index++) {
             if ((table->readTag(table, index_hash, index)) == tag ||
-                (table->readTag(table, index_hash, index)) == tag) {
+                (table->readTag(table, alt_index_hash, index)) == tag) {
                 result = true;
                 break;
             }
@@ -176,8 +176,37 @@ bool __ST_findTagInBucketsImpl(
 }
 
 bool __ST_findTagInBucketImpl(
-        const single_table_t* table, const size_t, const uint32_t) {
+        const single_table_t* table, const size_t index_hash,
+        const uint32_t tag_hash) {
+    bool result = false;
+    const char* index_bucket = (
+        (char*) table->buckets)[table->bytes_per_bucket*index_hash];
+    uint64_t bitfield1 = *((uint64_t *) index_bucket);
 
+    if (4 == table->tags_per_bucket) {
+        switch(table->bits_per_tag) {
+            case 4:
+                result = hasvalue4(bitfield1, tag);
+                break;
+            case 8:
+                result = hasvalue8(bitfield1, tag);
+                break;
+            case 12:
+                result = hasvalue12(bitfield1, tag);
+                break;
+            case 16:
+                result = hasvalue16(bitfield1, tag);
+                break;
+        }
+    } else {
+        for (size_t index = 0; index < (table->tags_per_bucket); index++) {
+            if (table->readTag(table, index_hash, index) == tag) {
+                result = true;
+                break;
+            }
+        }
+    }
+    return result;
 }
 
 bool __ST_deleteTagFromBucketImpl(
