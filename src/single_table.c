@@ -215,7 +215,7 @@ bool __ST_deleteTagFromBucketImpl(
     bool result = false;
     for (size_t index = 0; index < (table->tags_per_bucket); index++) {
         if (tag_hash == table->readTag(table, index_hash, index)) {
-            assert(true == table->findTagInBucket(index_hash, tag_hash));
+            assert(true == table->findTagInBucket(table, index_hash, tag_hash));
             table->writeTag(table, index_hash, index, 0);
             result = true;
             break;
