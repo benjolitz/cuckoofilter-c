@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdbool.h>
+#include <cuckoofilter/maybe.h>
 #include <cuckoofilter/packed_table.h>
 #include <cuckoofilter/single_table.h>
 
@@ -11,7 +12,6 @@ typedef enum CuckooTableTypes_t {
 /*
 ** Table definitions and methods
 */
-typedef struct TableType_t TableType_t;
 
 
 typedef size_t (*SizeInBytes_p)(const TableType_t*);

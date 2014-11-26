@@ -24,4 +24,6 @@ void __PermDecodeImpl(PermEncoding_t*, const uint16_t, uint8_t[4]);
 
 uint16_t __PermEncodeImpl(PermEncoding_t*, const uint8_t[4]);
 void __PermGenTablesImpl(PermEncoding_t*, int, int, uint8_t[4], uint16_t*);
+
+// Our constructor:
 PermEncoding_t* initializePermEncoding(void);

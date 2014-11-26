@@ -1,7 +1,11 @@
-#include <stdlib.h>
-#include <stdbool.h>
-#include <cuckoofilter/tables.h>
+#include <cuckoofilter/universal.h>
 #define MAX_CUCKOO_KICK_COUNT_FAIL 500
+
+//forward declarations:
+typedef struct TableType_t TableType_t;
+typedef struct single_table_t single_table_t;
+
+#include <cuckoofilter/tables.h>
 
 // function typedef styles:
 // _p suffix means "pure"
