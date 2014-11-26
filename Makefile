@@ -30,6 +30,11 @@ INSTALL_PREFIX = usr/local
 #### END PROJECT SETTINGS ####
 
 # Generally should not need to edit below this line
+OS = $(shell uname -s)
+
+ifeq "$(OS)" "Darwin"
+	TARGET = libcuckoofilter.dylib
+endif
 
 # Shell used in this makefile
 # bash is used for 'echo -en'
