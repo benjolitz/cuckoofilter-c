@@ -52,8 +52,7 @@ uint32_t __ST_readTagImpl(
         const single_table_t* table, const size_t index, const size_t offset) {
     uint32_t tag;
     size_t bits_per_tag = table->bits_per_tag;
-    const *char bucket[table->bytes_per_bucket] = *(
-        (table->buckets + (table->bytes_per_bucket*index)))
+    const char *bucket = ((char *)table->buckets)[table->bytes_per_bucket*index];
     switch(bits_per_tag) {
         case 2:
             tag = *((uint8_t*) bucket) >> (offset * 2);
@@ -87,32 +86,112 @@ uint32_t __ST_readTagImpl(
 }
 
 void __ST_writeTagImpl(
-        single_table_t*, const size_t, const size_t, const uint32_t) {
+        const single_table_t*, const size_t index, const size_t offset,
+        const uint32_t tag) {
+    char *bucket = ((char *)table->buckets)[table->bytes_per_bucket*index];
+    uint32_t masked_tag = tag & TAGMASK;
 
+    switch(bits_per_tag) {
+        case 2:
+            *((uint8_t *) bucket) |= masked_tag << (2*offset);
+            break;
+        case 4:
+            bucket += (offset >> 1);
+            if ((offset & 1) == 0) {
+                *((uint8_t *) bucket) &= 0xF0;
+                *((uint8_t *) bucket) |= masked_tag;
+            } else {
+                *((uint8_t *) bucket) &= 0x0F;
+                *((uint8_t *) bucket) |= (masked_tag << 4);
+            }
+            break;
+        case 8:
+            ((uint8_t *) bucket)[offset] =  masked_tag;
+            break;
+        case 12 :
+            bucket += offset + (offset >> 1);
+            if ((offset & 1) == 0) {
+                ((uint16_t *) bucket)[0] &= 0xF000;
+                ((uint16_t *) bucket)[0] |= masked_tag;
+            } else {
+                ((uint16_t *) bucket)[0] &= 0x000F;
+                ((uint16_t *) bucket)[0] |= (masked_tag << 4);
+            }
+            break;
+        case 16:
+            ((uint16_t *) bucket)[offset] = masked_tag;
+            break;
+        case 32:
+            ((uint32_t *) bucket)[offset] = masked_tag;
+            break;
+        default:
+            #ifdef NOISY
+                printf("__ST_writeTagImpl did nothing!\n");
+            #endif
+            break;
+    }
 }
-
+/*
+** with descriptive names, this actually makes sense.
+** It will see if the IndexHash or AltIndex has ever appears in the
+** bitfield bucket. Useful for answering if set contains item.
+*/
 bool __ST_findTagInBucketsImpl(
-        single_table_t*, const size_t, const size_t, const uint32_t) {
+        const single_table_t* table, const size_t index_hash,
+        const size_t alt_index_hash, const uint32_t tag_hash) {
+    const char* index_bucket = (
+        (char*) table->buckets)[table->bytes_per_bucket*index_hash];
+    const char* alt_index_bucket = (
+        (char*) table->buckets)[table->bytes_per_bucket*alt_index_hash];
 
+    uint64_t bitfield1 = *((uint64_t *) index_bucket);
+    uint64_t bitfield2 = *((uint64_t *) alt_index_bucket);
+    bool result = false;
+
+    if (table->tags_per_bucket == 4) {
+        switch(table->bits_per_tag) {
+            case 4:
+                result = hasvalue4(bitfield1, tag) || hasvalue4(bitfield2, tag);
+                break;
+            case 8:
+                result = hasvalue8(bitfield1, tag) || hasvalue8(bitfield2, tag);
+                break;
+            case 12:
+                result = hasvalue12(bitfield1, tag) || hasvalue12(bitfield2, tag);
+                break;
+            case 16:
+                result = hasvalue16(bitfield1, tag) || hasvalue16(bitfield2, tag);
+                break;
+        }
+    } else {
+        for (size_t index = 0; index < (table->tags_per_bucket); index++) {
+            if ((table->readTag(table, index_hash, index)) == tag ||
+                (table->readTag(table, index_hash, index)) == tag) {
+                result = true;
+                break;
+            }
+        }
+    }
+    return result;
 }
 
 bool __ST_findTagInBucketImpl(
-        single_table_t*, const size_t, const uint32_t) {
+        const single_table_t* table, const size_t, const uint32_t) {
 
 }
 
 bool __ST_deleteTagFromBucketImpl(
-        single_table_t*, const size_t, const uint32_t) {
+        const single_table_t* table, const size_t, const uint32_t) {
 
 }
 
 bool __ST_insertTagToBucketImpl(
-        single_table_t*, const size_t, const uint32_t, const bool, uint32_t*) {
+        const single_table_t* table, const size_t, const uint32_t, const bool, uint32_t*) {
 
 }
 
 size_t __ST_getNumTagsInBucketImpl(
-        single_table_t*, const size_t) {
+        const single_table_t* table, const size_t) {
 
 }
 
