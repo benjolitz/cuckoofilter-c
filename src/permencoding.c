@@ -66,7 +66,7 @@ void __PermGenTablesImpl(
         // For every k < 4, call genTables on each successive index (k) for
         // destination
         if ( (k + 1) < 4) {
-            table->genTables(i, k+1, destination, index);
+            table->genTables(table, i, k+1, destination, index);
             continue;
         }
         // set the dec_table element (via *index) to the uint16
@@ -93,7 +93,7 @@ PermEncoding_t* initializePermEncoding(void) {
     *(Perm_encode_p*)&result->encode = __PermEncodeImpl;
     *(Perm_gen_tables_m*)&result->genTables = __PermGenTablesImpl;
     uint8_t destination[4];
-    uint16_t index = 0
+    uint16_t index = 0;
     memset(result->dec_table, 0, sizeof(result->dec_table));
     memset(result->enc_table, 0, sizeof(result->enc_table));
     result->genTables(result, 0, 0, destination, &index);
