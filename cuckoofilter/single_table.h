@@ -36,7 +36,8 @@
                               const size_t offset)
         __attribute__((nonnull));
     void __ST_writeTagImpl(
-            const single_table_t*, const size_t index, const size_t offset,
+            const single_table_t table*, const size_t index,
+            const size_t offset,
             const uint32_t tag)
         __attribute__((nonnull));
 

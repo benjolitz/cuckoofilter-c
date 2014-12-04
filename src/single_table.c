@@ -86,7 +86,7 @@ uint32_t __ST_readTagImpl(
 }
 
 void __ST_writeTagImpl(
-        const single_table_t*, const size_t index, const size_t offset,
+        const single_table_t* table, const size_t index, const size_t offset,
         const uint32_t tag) {
     char *bucket = ((char *)table->buckets)[table->bytes_per_bucket*index];
     uint32_t masked_tag = tag & TAGMASK;
